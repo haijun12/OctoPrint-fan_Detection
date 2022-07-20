@@ -1,0 +1,10 @@
+#tab_plugin_helloworld iframe {
+  width: 100%;
+  height: 600px;
+  border: none;
+}
+
+#dashboard {
+	font-size: 25px;
+	font-family: 'Josefin Sans', sans-serif;
+}

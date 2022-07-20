@@ -1,0 +1,25 @@
+<div class = "current_status">
+	<h1>Haijun Research </h1>
+	<span> Current Fan Speed: <strong data-bind="text: fanSpeed()"></strong> %</span><br>
+	<span> Current Predicted Top Surface Roughness: 
+		<strong data-bind="text: topSR()"></strong> </span><br>
+	<span> Current Predicted Side Surface Roughness: 
+		<strong data-bind="text: sideSR()"></strong> </span><br>
+	<span> Fan Speed Status (orange means attempted attack where the fan speed doesn't affect printing quality): 
+		<strong data-bind="text: fan_changed_status()"></strong> </span> <br>
+
+	<h1> First Attack Stats (if any): </h1>
+	<span> Fan Speed was changed/stayed at: <strong data-bind="text: first_attack_fan_speed()"></strong> </span> <br>
+</div>
+
+<div class = "initial_status">
+	<h1> Original Printing Settings </h1>
+	<span> Infill Density: <strong data-bind="text: infill()"></strong> </span> <br>
+	<span> Layer Height: <strong data-bind="text: layer()"></strong> </span> <br>
+	<span> Fan Speed: <strong data-bind="text: initial_fan_speed()"></strong> </span> <br>
+	<span> Initial Predicted Side Surface Roughness: 
+		<strong data-bind="text: initial_sideSR()"></strong> </span> <br>
+	<span> Initial Predicted Top Surface Roughness: 
+		<strong data-bind="text: initial_topSR()"></strong> </span> <br>
+	<span> Bad Initial Print: <strong data-bind="text: initial_bad_print()"></strong> </span> <br>
+</div>
