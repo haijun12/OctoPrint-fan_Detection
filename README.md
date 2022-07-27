@@ -1,11 +1,8 @@
-OctoPrint Plugin Skeleton
+Fan Speed Attack Detection Plugin
 =========================
 
-This is a basic plugin skeleton that you can use as a basis for your own OctoPrint plugin.
-
-You can copy the files to a folder of your choice, or just clone this repository, renaming it in the process. Then 
-modify ``setup.py`` to fit your plugin, rename ``octoprint_skeleton`` accordingly and finally implement your plugin 
-under ``octoprint_<plugin identifier>``.
+A plugin that monitors fan speed changes sent through GCode Commands
+and Displays the status of the printing quality given any fan speed changes
 
 Example Usage
 -------------

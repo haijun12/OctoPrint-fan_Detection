@@ -77,9 +77,10 @@ class Detect_attackPlugin(octoprint.plugin.StartupPlugin,
                 # just compare it to the maxes
                 sideSR = self.predict_SR(self.layer_H, self.infill, new_fan_speed, self.sideModel)
                 topSR = self.predict_SR(self.layer_H, self.infill, new_fan_speed, self.topModel)
-                is_fan_changed = self.predict_print_quality(sideSR, topSR)
+                print(sideSR, topSR)
+                bad_fs_effect = self.predict_print_quality(sideSR, topSR)
                 cmd = "M106 S"
-                if is_fan_changed:
+                if not bad_fs_effect:
                     # there is an attempted attack, change green button to orange
                     fan_speed_actual = float(matched.group(1)) * 255.0 / 100.0
                     self.fan_speed = new_fan_speed
@@ -87,7 +88,7 @@ class Detect_attackPlugin(octoprint.plugin.StartupPlugin,
                     self.update_surface_roughness(sideSR, topSR)
                 # there is now a declared attack, change green button to red
                 cmd += str(fan_speed_actual)
-                self.send_attack_message(is_fan_changed, self.first_attack)
+                self.send_attack_message(bad_fs_effect, self.first_attack)
                 if self.first_attack:
                     self.first_attack = False
                 return cmd
@@ -98,10 +99,10 @@ class Detect_attackPlugin(octoprint.plugin.StartupPlugin,
         payload = {"typeof": typeof, "message" : message}
         self._plugin_manager.send_plugin_message(self._identifier, payload)
                                                  
-    def send_attack_message(self, is_fan_changed, first_attack = False):
+    def send_attack_message(self, is_fan_bad, first_attack = False):
             print("attempt to change fan speed")
-            print(is_fan_changed)
-            self.send_Message("is_fan_changed", int(is_fan_changed))
+            print(is_fan_bad)
+            self.send_Message("is_fan_bad", int(is_fan_bad))
             self.send_Message("first_attack", int(first_attack))
 
             
@@ -120,9 +121,14 @@ class Detect_attackPlugin(octoprint.plugin.StartupPlugin,
         if event == octoprint.events.Events.STARTUP:
             self._logger.info("Octoprint Started")
             # TESTING
-            x = self.predict_SR(.3, 50, 0, self.sideModel)
-            y = self.predict_SR(.3, 50, 100, self.sideModel)
-            z = self.predict_SR(.3, 50, 50, self.sideModel)
+            x = self.predict_SR(.15, 50, 0, self.sideModel)
+            y = self.predict_SR(.15, 50, 100, self.sideModel)
+            z = self.predict_SR(.15, 50, 50, self.sideModel)
+            a = self.predict_SR(.15, 50, 0, self.topModel)
+            b = self.predict_SR(.15, 50, 100, self.topModel)
+            c = self.predict_SR(.15, 50, 50, self.topModel)
+            print(x,y,z)
+            print(a,b,c)
         elif event == octoprint.events.Events.PRINT_STARTED:
             self.printing = True
             self.bad_initial_print = False

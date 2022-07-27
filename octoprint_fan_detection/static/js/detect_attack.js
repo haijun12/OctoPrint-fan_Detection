@@ -34,13 +34,15 @@ $(function() {
 			self.sideSR(data.message)
 		} else if (data.typeof == "topSR") {
 			self.topSR(data.message)
-		} else if (data.typeof == "is_fan_changed") {
+		} else if (data.typeof == "is_fan_bad") {
 			console.log( "MESSAGE:" + data.message)
-			if (data.message > 0) {
+			if (data.message == 0) {
+				console.log("orange")
 				self.fan_changed_status("orange")
 				var btn = document.getElementById("fan_status");
 				btn.style.backgroundColor = 'orange';
 			} else {
+				console.log("Red")
 				var btn = document.getElementById("fan_status");
 				btn.style.backgroundColor = 'red';
 			}
