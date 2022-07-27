@@ -1,7 +1,7 @@
 # coding=utf-8
 from __future__ import absolute_import
 
-import os, re, time, requests, flask
+import re
 import pandas as pd
 import numpy as np
 import tflite_runtime.interpreter as tflite
@@ -16,10 +16,10 @@ class Detect_attackPlugin(octoprint.plugin.StartupPlugin,
                           octoprint.plugin.AssetPlugin,
                           octoprint.plugin.TemplatePlugin):
     
-    sideModel = '/home/pi/nnside_model.tflite'
-    topModel = '/home/pi/nntop_model.tflite'
-    sideCluster = pd.read_csv('/home/pi/side_min_cluster.csv')
-    topCluster = pd.read_csv('/home/pi/top_min_cluster.csv')
+    sideModel = 'https://github.com/haijun12/OctoPrint-fan_Detection/nnside_model.tflite'
+    topModel = 'https://github.com/haijun12/OctoPrint-fan_Detection/nntop_model.tflite'
+    sideCluster = pd.read_csv('https://github.com/haijun12/OctoPrint-fan_Detection/side_min_cluster.csv')
+    topCluster = pd.read_csv('https://github.com/haijun12/OctoPrint-fan_Detection/top_min_cluster.csv')
     # max best quality SR plus the MAE
     sideMAE = .466
     topMAE = 1.69
