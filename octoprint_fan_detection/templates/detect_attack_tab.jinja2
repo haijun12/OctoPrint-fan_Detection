@@ -1,25 +1,50 @@
-<div class = "current_status">
-	<h1>Haijun Research </h1>
-	<span> Current Fan Speed: <strong data-bind="text: fanSpeed()"></strong> %</span><br>
-	<span> Current Predicted Top Surface Roughness: 
-		<strong data-bind="text: topSR()"></strong> </span><br>
-	<span> Current Predicted Side Surface Roughness: 
-		<strong data-bind="text: sideSR()"></strong> </span><br>
-	<span> Fan Speed Status (orange means attempted attack where the fan speed doesn't affect printing quality): 
-		<strong data-bind="text: fan_changed_status()"></strong> </span> <br>
-
-	<h1> First Attack Stats (if any): </h1>
-	<span> Fan Speed was changed/stayed at: <strong data-bind="text: first_attack_fan_speed()"></strong> </span> <br>
+<div id = "status">
+	<h1> Fan Speed Attack Detection Model (FSAD)</h1>
+	<span> By: Haijun Si </span><br>
+	
+	<h1> Fan Speed Status: </h1>
+	<button class = "button id = "fan_status" ">Status</button> 
+	<div id = "fan_speed_change_key"> 
+		<br>
+		<div class = "FSAD_legend">Fan Speed Legend</div>
+		<dl>
+			<dt>[green]</dt>
+			<dd> - Good Print </dd>
+			<br>
+			<dt>[orange]</dt>
+			<dd> - Fan Speed Changed (Good Quality Change)</dd>
+			<br>
+			<dt>[red]</dt>
+			<dd> - Fan Speed Not Changed (Bad Quality Attack) </dd>
+			<br>		
+		</dl>
+	</div>
 </div>
-
-<div class = "initial_status">
-	<h1> Original Printing Settings </h1>
-	<span> Infill Density: <strong data-bind="text: infill()"></strong> </span> <br>
-	<span> Layer Height: <strong data-bind="text: layer()"></strong> </span> <br>
-	<span> Fan Speed: <strong data-bind="text: initial_fan_speed()"></strong> </span> <br>
-	<span> Initial Predicted Side Surface Roughness: 
-		<strong data-bind="text: initial_sideSR()"></strong> </span> <br>
-	<span> Initial Predicted Top Surface Roughness: 
-		<strong data-bind="text: initial_topSR()"></strong> </span> <br>
-	<span> Bad Initial Print: <strong data-bind="text: initial_bad_print()"></strong> </span> <br>
+<div class="FSAD_flex-container">
+	<div class = FSAD_flex-child>
+		<h1> Current Settings</h1>
+		<span id = "FSAD_stat"> Fan Speed: <strong data-bind="text: fanSpeed()"></strong> %</span><br><br>
+		<div class = "FSAD_header"> Prediction: </div><br>
+		<span id = "FSAD_stat"> Top/Bottom Surface Roughness: </span> <br>
+		<span id = "FSAD_stat"><strong data-bind="text: topSR()"></strong> um</span><br><br>
+		<span id = "FSAD_stat"> Side Surface Roughness: </span> <br>
+		<span id = "FSAD_stat"><strong data-bind="text: sideSR()"></strong> um</span><br>
+	</div>
+	<div class = FSAD_flex-child>
+		<h1> Initial Printing Settings </h1>
+		<span id = "FSAD_stat"> Infill Density: <strong data-bind="text: infill()"></strong> mm</span> <br>
+		<span id = "FSAD_stat"> Layer Height: <strong data-bind="text: layer()"></strong> mm</span> <br>
+		<span id = "FSAD_stat"> Fan Speed: <strong data-bind="text: initial_fan_speed()"></strong> %</span> <br><br>
+		<div class = "FSAD_header" > Prediction: </div><br>	
+		<span id = "FSAD_stat"> Top/Bottom Surface Roughness: </span> <br>
+		<span id = "FSAD_stat"><strong data-bind="text: initial_topSR()"></strong> um</span> <br><br>
+		<span id = "FSAD_stat"> Side Surface Roughness: </span> <br>
+		<span id = "FSAD_stat"><strong data-bind="text: initial_sideSR()"></strong> um</span> <br><br>
+		<span id = "FSAD_stat"> Bad Initial Print: <strong data-bind="text: initial_bad_print()"></strong> </span> <br>
+	</div>
+</div>
+<div id = "status">
+	
+	<h1> First Attack Stats (if any): </h1>
+	<span> Fan Speed was changed/stayed at: <strong data-bind="text: first_attack_fan_speed()"></strong> </span><br>
 </div>

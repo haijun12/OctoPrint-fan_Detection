@@ -4,7 +4,61 @@
   border: none;
 }
 
-#dashboard {
-	font-size: 25px;
+#status {
+	font-size: 17px;
 	font-family: 'Josefin Sans', sans-serif;
+	text-align:center;
+}
+
+#fan_speed_change_key {
+	text-align:center;
+	font-size:17px;
+}
+.FSAD_flex-container {
+	display:flex;
+}
+
+.FSAD_flex-child {
+	font-size: 17px;
+	font-family: 'Josefin Sans', sans-serif;
+	flex:1;
+	border: none;
+}
+
+.button {
+	background-color: #4CAF50;
+	color: black;
+	font-size: 35px;
+	font-family: 'Josefin Sans', sans-serif;
+	padding:10px 20px;
+	border-radius:50%;
+	text-align:center;
+	-webkit-border-radius: 5px;
+	border: none;
+	margin-top: 10px;
+}
+
+dl {
+	text-align:left;
+	background:#fff;
+	border: 1px solid #000;
+	padding: 5px 15px;
+}
+
+dt, dd {
+	display:inline;
+}
+
+#FSAD_stat {
+	border: none
+}
+
+.FSAD_header {
+	font-weight:bold;
+	font-size: 20px;
+	text-decoration: underline;
+}
+.FSAD_legend {
+	text-decoration: underline;
+	font-weight:bold;
 }

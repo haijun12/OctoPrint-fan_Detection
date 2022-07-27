@@ -5,6 +5,7 @@ import os, re, time, requests, flask
 import pandas as pd
 import numpy as np
 import tflite_runtime.interpreter as tflite
+from datetime import datetime
 import octoprint.plugin, octoprint.filemanager, octoprint.filemanager.util, octoprint.util, octoprint.events
 
 
@@ -38,7 +39,6 @@ class Detect_attackPlugin(octoprint.plugin.StartupPlugin,
     ##~~ SettingsPlugin mixin
     def on_after_startup(self):
         self._logger.info("Plugin Started")
-        self.update_fan_speed()
         return
             
     def get_settings_defaults(self):
@@ -93,28 +93,15 @@ class Detect_attackPlugin(octoprint.plugin.StartupPlugin,
                 return cmd
         else:
             return
-                
-##    def gcode_received_hook(self, comm, line, *args, **kwargs):
-        # get fan speed when printing from sd card
-##        print(line)
-##        if "M106" not in line:
-##            return line
-##        
-##        matched = self.fan_speed_pattern.match(line)
-##        if matched:
-##            self.fan_speed = float(matched.group(1)) * 100.0 / 255.0 #get percent
-##            msg = dict(
-##                fanSpeed=str(self.fan_speed)
-##            )
-##            self._plugin_manager.send_plugin_message(self._identifier, msg)
-##
-##        return line
+
     def send_Message(self, typeof, message):
         payload = {"typeof": typeof, "message" : message}
         self._plugin_manager.send_plugin_message(self._identifier, payload)
                                                  
     def send_attack_message(self, is_fan_changed, first_attack = False):
-            self.send_Message("is_fan_changed", is_fan_changed)
+            print("attempt to change fan speed")
+            print(is_fan_changed)
+            self.send_Message("is_fan_changed", int(is_fan_changed))
             self.send_Message("first_attack", int(first_attack))
 
             
@@ -141,24 +128,20 @@ class Detect_attackPlugin(octoprint.plugin.StartupPlugin,
             self.bad_initial_print = False
             self.first_attack = True
             filename = payload["path"]
-            x = filename.split("/DATA/")
-            print(x)
-            file = "/home/pi/Downloads/haijun/data/" + x[1]
+            file = "/home/pi/Downloads/" + filename
             self.minFAN, self.fan_speed, self.infill, self.layer_H = self.readGCode(file)
             self.initial_sideSR = self.predict_SR(self.layer_H, self.infill, self.fan_speed, self.sideModel)
             self.initial_topSR = self.predict_SR(self.layer_H, self.infill, self.fan_speed, self.topModel)
             # send messages
-            print(self.initial_sideSR)
-            print(type(self.initial_topSR))
+            self.update_fan_speed()
             self.send_Message("infill_density", self.infill)
             self.send_Message("layer_height", self.layer_H)
             self.send_Message("initial_fan_speed", self.fan_speed)
             self.update_surface_roughness(self.initial_sideSR, self.initial_topSR, 1)
             self.bad_initial_print = self.predict_print_quality(self.initial_sideSR, self.initial_topSR)
-            print(self.bad_initial_print)
             self.send_Message("bad_initial_print", int(self.bad_initial_print))
-        elif event == octoprint.events.Events.CLIENT_AUTHED:
-            self.update_fan_speed()
+        elif event == octoprint.events.Events.PRINT_CANCELLED or event == octoprint.events.Events.PRINT_DONE:
+            self.printing = False
         else:
             return
 
@@ -219,8 +202,6 @@ class Detect_attackPlugin(octoprint.plugin.StartupPlugin,
         return (sideSR > self.sideMax or topSR > self.topMax)
     
     def predict_print_quality(self, sideSR, topSR):
-        print("SIDE SR PREDICTION IS : ", sideSR)
-        print("TOP SR PREDICTION IS : ", topSR)
         # low tolerance here
         if self.bad_initial_print == True:
             print(" BAD INITIAL PRINT SETTINGS BUT ALSO BAD FAN SPEED")
@@ -230,15 +211,6 @@ class Detect_attackPlugin(octoprint.plugin.StartupPlugin,
             print("testing high tolerance")
             return self.predict_print_quality_against_high_tolerance(sideSR, topSR)
     
-    def createFilePreProcessor(self, path, file_object, blinks=None, printer_profile=None, allow_overwrite=True, *args, **kwargs):
-
-        fileName = file_object.filename
-        if not octoprint.filemanager.valid_file_type(fileName, type="gcode"):
-            return file_object
-        fileStream = file_object.stream()
-        self._logger.info("GcodePreProcessor started processing.")
-        self.gcode_preprocessors[path] = GcodePreProcessor(fileStream, self.layer_indicator_patterns, self.layer_move_pattern, self.filament_change_pattern, self.python_version, self._logger)
-        return octoprint.filemanager.util.StreamWrapper(fileName, self.gcode_preprocessors[path])
     ##~~ Softwareupdate hook
 
     def get_update_information(self):
@@ -265,7 +237,7 @@ class Detect_attackPlugin(octoprint.plugin.StartupPlugin,
 # If you want your plugin to be registered within OctoPrint under a different name than what you defined in setup.py
 # ("OctoPrint-PluginSkeleton"), you may define that here. Same goes for the other metadata derived from setup.py that
 # can be overwritten via __plugin_xyz__ control properties. See the documentation for that.
-__plugin_name__ = "Detect Attack"
+__plugin_name__ = "FSAD"
 
 
 # Set the Python version your plugin is compatible with below. Recommended is Python 3 only for all new plugins.
@@ -280,10 +252,7 @@ def __plugin_load__():
     global __plugin_hooks__
     __plugin_hooks__ = {
         "octoprint.plugin.softwareupdate.check_config": __plugin_implementation__.get_update_information,
-##        "octoprint.comm.protocol.gcode.received": __plugin_implementation__.gcode_received_hook,
         "octoprint.comm.protocol.gcode.queuing": __plugin_implementation__.process_gcode
-##        "octoprint.filemanager.preprocessor": __plugin_implementation__.createFilePreProcessor
     }
     global __plugin_settings_overlay__
     __plugin_settings_overlay__ = dict(appearance=dict(components=dict(order=dict(tab=["Detect_Attack"]))))
-

@@ -36,13 +36,15 @@ $(function() {
 			self.topSR(data.message)
 		} else if (data.typeof == "is_fan_changed") {
 			console.log( "MESSAGE:" + data.message)
-			if (data.message == True) {
+			if (data.message > 0) {
 				self.fan_changed_status("orange")
+				var btn = document.getElementById("fan_status");
+				btn.style.backgroundColor = 'orange';
 			} else {
-				self.fan_changed_status("red")
+				var btn = document.getElementById("fan_status");
+				btn.style.backgroundColor = 'red';
 			}
 		} else if (data.typeof == "first_attack" && data.message > 0) {
-			self.first_attack_time(self.current_time)
 			self.first_attack_fan_speed(self.fanSpeed)
 		} else if (data.typeof == "infill_density") {
 			self.infill(data.message)
