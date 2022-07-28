@@ -5,11 +5,6 @@ A plugin that monitors fan speed changes sent through GCode Commands
 and Displays the status of the printing quality given any fan speed changes
 
 ![Screenshot](https://github.com/haijun12/OctoPrint-fan_Detection/blob/main/screenshots/green_status.png)
-                                                                                                            |  Solarized Ocean
-:----------------------------------------------------------------------------------------------------------:|:-------------------------:
-![Screenshot](https://github.com/haijun12/OctoPrint-fan_Detection/blob/main/screenshots/orange_status.png)  |  ![screenshot](https://github.com/haijun12/OctoPrint-fan_Detection/blob/main/screenshots/red_status.png)
-![Screenshot](https://github.com/haijun12/OctoPrint-fan_Detection/blob/main/screenshots/orange_status.png)
-![Screenshot](https://github.com/haijun12/OctoPrint-fan_Detection/blob/main/screenshots/red_status.png)
 
 * Green Status = Fan Speed has not been changed from initial print
 * Orange Status = Fan Speed has been changed but printing quality is still high
@@ -40,6 +35,9 @@ and Displays the status of the printing quality given any fan speed changes
         * ID: 20% <= x <= 80%
         * FS: .1mm <= x <= .3 mm
     * GCode File must be under /home/pi/Downloads folder and must match SD Card folder name exactly (case sensitive)
+## Additional Status
+![Screenshot](https://github.com/haijun12/OctoPrint-fan_Detection/blob/main/screenshots/orange_status.png)
+![Screenshot](https://github.com/haijun12/OctoPrint-fan_Detection/blob/main/screenshots/red_status.png)
 
 ## Setup
 
