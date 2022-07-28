@@ -35,34 +35,16 @@ class Detect_attackPlugin(octoprint.plugin.StartupPlugin,
     initial_topSR = 0
     MAX_FAN_SPEED = 255
     MAX_FAN_SPEED_PERCENT = 100.0
-    ##~~ SettingsPlugin mixin
-    def on_after_startup(self):
-        self._logger.info("Plugin Started")
-        return
-            
-    def get_settings_defaults(self):
-        return {
-            # default settings
-        }
 
-    ##~~ AssetPlugin mixin
-
-    def get_assets(self):
-        # Define your plugin's asset files to automatically include in the
-        # core UI here.
-        return {
-            "js": ["js/detect_attack.js"],
-            "css": ["css/detect_attack.css"],
-            "less": ["less/detect_attack.less"]
-        }
-    def get_template_configs(self):
-        return [
-            dict(type="tab", custom_bindings=True)
-            ]
     
     def process_gcode(self, comm_instance, phase, cmd, cmd_type, gcode, *args, **kwargs):
+        """
+        Only observes Fan Speed GCode M106, does not look for M107
+
+        This conducts all the backend features of predicting new fan speed, 
+        updating it only if the print quality is not affected poorly. 
+        """
         if not gcode:
-            print("NOT GCODE")
             return
         elif gcode in ("M106") and self.printing:
             matched = self.fan_speed_pattern.match(cmd.upper())
@@ -90,6 +72,10 @@ class Detect_attackPlugin(octoprint.plugin.StartupPlugin,
                 return cmd
 
     def on_event(self, event, payload):
+        """
+        Events to read initial printing parameters along with cleaning up 
+        potential memory leaks
+        """
         if event == octoprint.events.Events.STARTUP:
             self._logger.info("Octoprint Started")
             # TESTING
@@ -207,6 +193,20 @@ class Detect_attackPlugin(octoprint.plugin.StartupPlugin,
         
     def update_fan_speed(self):
         self.send_Message("fan_speed", self.fan_speed)
+        
+    ##~~ AssetPlugin mixin    
+    def get_assets(self):
+        # Define your plugin's asset files to automatically include in the
+        # core UI here.
+        return {
+            "js": ["js/detect_attack.js"],
+            "css": ["css/detect_attack.css"],
+            "less": ["less/detect_attack.less"]
+        }
+    def get_template_configs(self):
+        return [
+            dict(type="tab", custom_bindings=True)
+            ]
     ##~~ Softwareupdate hook
 
     def get_update_information(self):
