@@ -9,6 +9,10 @@ and Displays the status of the printing quality given any fan speed changes
 * Green Status = Fan Speed has not been changed from initial print
 * Orange Status = Fan Speed has been changed but printing quality is still high
 * Red Status = Fan speed was attempted to be changed but because the printing quality is low, it is not used
+## Research Details
+* Data Collected can be found here : [Data](https://github.com/haijun12/OctoPrint-fan_Detection/tree/main/data)
+* Machine Learning Models can be found here: [ML](https://github.com/haijun12/OctoPrint-fan_Detection/tree/main/models)
+* Plugin Code can be found here: [Code](https://github.com/haijun12/OctoPrint-fan_Detection/tree/main/octoprint_fan_detection)
 
 ## Features
 
