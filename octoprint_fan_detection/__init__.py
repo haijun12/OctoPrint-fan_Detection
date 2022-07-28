@@ -16,6 +16,7 @@ class Detect_attackPlugin(octoprint.plugin.StartupPlugin,
                           octoprint.plugin.AssetPlugin,
                           octoprint.plugin.TemplatePlugin):
     
+    # Class Variables
     sideModel = 'https://github.com/haijun12/OctoPrint-fan_Detection/nnside_model.tflite'
     topModel = 'https://github.com/haijun12/OctoPrint-fan_Detection/nntop_model.tflite'
     sideCluster = pd.read_csv('https://github.com/haijun12/OctoPrint-fan_Detection/side_min_cluster.csv')
@@ -193,7 +194,7 @@ class Detect_attackPlugin(octoprint.plugin.StartupPlugin,
         
     def update_fan_speed(self):
         self.send_Message("fan_speed", self.fan_speed)
-        
+
     ##~~ AssetPlugin mixin    
     def get_assets(self):
         # Define your plugin's asset files to automatically include in the

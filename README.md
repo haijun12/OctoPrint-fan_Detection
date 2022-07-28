@@ -4,51 +4,51 @@ Fan Speed Attack Detection Plugin
 A plugin that monitors fan speed changes sent through GCode Commands
 and Displays the status of the printing quality given any fan speed changes
 
-Example Usage
--------------
+![Screenshot] (https://github.com/haijun12/OctoPrint-fan_Detection/blob/main/green_status.png)
+![Screenshot] (https://github.com/haijun12/OctoPrint-fan_Detection/blob/main/orange_status.png)
+![Screenshot] (https://github.com/haijun12/OctoPrint-fan_Detection/blob/main/red_status.png)
 
-Clone your repository into a new development directory and rename ``octoprint_skeleton``:
+Green Status = Fan Speed has not been changed from initial print
+Orange Status = Fan Speed has been changed but printing quality is still high
+Red Status = Fan speed was attempted to be changed but because the printing quality is low, it is not used
 
-    git clone https://github.com/OctoPrint/OctoPrint-PluginSkeleton OctoPrint-MyNewPlugin
-    cd OctoPrint-MyNewPlugin
-    mv octoprint_skeleton octoprint_mynewplugin
+## Features
 
-Modify `setup.py`'s `plugin_<xyz>` settings so that they match your plugin, e.g.:
+* Reads Initial Printing Parameters once a Print is started:
+    * Fan Speed (FS)
+    * Infill Density (ID)
+    * Layer Height (LT)
+* Predicts the surface roughness through the three parameters with a Neural Network Model
+* Classifes the initial print as a high or low quality print with Clustering Model
+* Monitors Printer for any Fan Speed changes through the GCode M106 Command
+* Given the new fan speed and initial print state:
+    * High quality initial print = high tolerance 
+    * Low Quality Initial Print = low tolerance
+        * New Fan speed is compared to high tolerance or low tolerance
+            * Orange Status if print is still high quality
+            * Red Status if print is low quality due to FS 
 
-``` python
-plugin_identifier = "mynewplugin"
-plugin_name = "OctoPrint-MyNewPlugin"
-plugin_version = "1.0"
-plugin_description = "Awesome plugin that does something"
-plugin_author = "You"
-plugin_author_email = "you@somewhere.net"
-plugin_url = "https://github.com/you/OctoPrint-MyNewPlugin"
-```
+## Specific Requirements
 
-Then implement your plugin under ``octoprint_mynewplugin`` (don't forget to adjust ``__init__.py``!), e.g.:
+* Given this was only a 10 week Research Project, there are certain limitations to this plugin:
+    * Only works with Prusa Sliced GCode Files or similarly formatted GCode Files (See Process_GCode in __init__.py)
+    * Prediction Models are more accurate in these specific printing parameters:
+        * FS: 0% <= x <= 100%
+        * ID: 20% <= x <= 80%
+        * FS: .1mm <= x <= .3 mm
+    * GCode File must be under /home/pi/Downloads folder and must match SD Card folder name exactly (case sensitive)
 
-``` python
-# coding=utf-8
-from __future__ import absolute_import
+## Setup
 
-import octoprint.plugin
+Install via the bundled [Plugin Manager](https://github.com/foosel/OctoPrint/wiki/Plugin:-Plugin-Manager) or manually using this URL:
 
-class HelloWorldPlugin(octoprint.plugin.StartupPlugin):
-    def on_after_startup(self):
-        self._logger.info("Hello World!")
-        
-__plugin_name__ = "Hello World"
-__plugin_implementation__ = HelloWorldPlugin()
-```
+    https://github.com/haijun12/OctoPrint-fan_Detection/archive/master.zip
 
-Test it (e.g. via ``python setup.py develop``). If everything works, write a nice ``README.md``, replacing the existing one.
-Commit your code, then push it to your plugin's repository (this assumes you already created it on Github as
-``you/OctoPrint-MyNewPlugin``), e.g.:
+## Configuration
 
-    git commit -a -m "Initial commit of MyNewPlugin"
-    git remote set-url origin git@github.com:you/OctoPrint-MyNewPlugin.git
-    git push -u origin master
+* For configuration help, please visit the [wiki](https://github.com/j7126/OctoPrint-Dashboard/wiki).
 
-Congratulations, you are now the proud maintainer of a new OctoPrint plugin! :) Don't forget to add an entry to the
-[wiki](https://github.com/foosel/OctoPrint/wiki#plugins) once it's suitable for general consumption, so that others
-may find it!
+## Credits
+    * Inspired by OctoPrint Dashboard: https://github.com/j7126/OctoPrint-Dashboard
+    * Created by haijun12
+    * Mentors: Ismail Fidan, Zhicheng Zhang, and Orkhan Huseynov
