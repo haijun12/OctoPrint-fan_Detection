@@ -17,10 +17,10 @@ class Detect_attackPlugin(octoprint.plugin.StartupPlugin,
                           octoprint.plugin.TemplatePlugin):
     
     # Class Variables
-    sideModel = 'https://github.com/haijun12/OctoPrint-fan_Detection/nnside_model.tflite'
-    topModel = 'https://github.com/haijun12/OctoPrint-fan_Detection/nntop_model.tflite'
-    sideCluster = pd.read_csv('https://github.com/haijun12/OctoPrint-fan_Detection/side_min_cluster.csv')
-    topCluster = pd.read_csv('https://github.com/haijun12/OctoPrint-fan_Detection/top_min_cluster.csv')
+    sideModel = 'https://github.com/haijun12/OctoPrint-fan_Detection/models/nnside_model.tflite'
+    topModel = 'https://github.com/haijun12/OctoPrint-fan_Detection/models/nntop_model.tflite'
+    sideCluster = pd.read_csv('https://github.com/haijun12/OctoPrint-fan_Detection/data/side_min_cluster.csv')
+    topCluster = pd.read_csv('https://github.com/haijun12/OctoPrint-fan_Detection/data/top_min_cluster.csv')
     # max best quality SR plus the MAE
     sideMAE = .466
     topMAE = 1.69

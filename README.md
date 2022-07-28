@@ -4,9 +4,9 @@ Fan Speed Attack Detection Plugin
 A plugin that monitors fan speed changes sent through GCode Commands
 and Displays the status of the printing quality given any fan speed changes
 
-![Screenshot] (https://github.com/haijun12/OctoPrint-fan_Detection/blob/main/green_status.png)
-![Screenshot] (https://github.com/haijun12/OctoPrint-fan_Detection/blob/main/orange_status.png)
-![Screenshot] (https://github.com/haijun12/OctoPrint-fan_Detection/blob/main/red_status.png)
+![Screenshot] (https://github.com/haijun12/OctoPrint-fan_Detection/blob/main/screenshots/green_status.png)
+![Screenshot] (https://github.com/haijun12/OctoPrint-fan_Detection/blob/main/screenshots/orange_status.png)
+![Screenshot] (https://github.com/haijun12/OctoPrint-fan_Detection/blob/main/screenshots/red_status.png)
 
 Green Status = Fan Speed has not been changed from initial print
 Orange Status = Fan Speed has been changed but printing quality is still high
