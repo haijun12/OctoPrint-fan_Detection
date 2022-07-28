@@ -25,17 +25,16 @@ class Detect_attackPlugin(octoprint.plugin.StartupPlugin,
     topMAE = 1.69
     sideMax = sideCluster['side'].max() + sideMAE
     topMax = topCluster['top/bottom'].max() + topMAE
-    print(sideMax)
-    print(topMax)
     fan_speed_pattern = re.compile("^M106.* S(\d+\.?\d*).*")
-    fan_speed = 100
     fan_speed_actual = 0
+    fan_speed = 0
     minFAN = 0
-    maxFAN = 0
     infill = 0
     layer_H = 0
     initial_sideSR = 0
     initial_topSR = 0
+    MAX_FAN_SPEED = 255
+    MAX_FAN_SPEED_PERCENT = 100.0
     ##~~ SettingsPlugin mixin
     def on_after_startup(self):
         self._logger.info("Plugin Started")
@@ -68,67 +67,40 @@ class Detect_attackPlugin(octoprint.plugin.StartupPlugin,
         elif gcode in ("M106") and self.printing:
             matched = self.fan_speed_pattern.match(cmd.upper())
             if matched:
-                new_fan_speed = float(matched.group(1))  * 100.0 / 255.0
-                fan_speed_actual = 255
-                print(new_fan_speed)
-                print(self.fan_speed)
+                new_fan_speed = float(matched.group(1))  * self.MAX_FAN_SPEED_PERCENT / self.MAX_FAN_SPEED
+                fan_speed_actual = fan_speed
                 # note if the initial print is good or not, if it was already bad then just
                 # compare the new predicted sr to the initial print + MAE, but if it was good then
                 # just compare it to the maxes
                 sideSR = self.predict_SR(self.layer_H, self.infill, new_fan_speed, self.sideModel)
                 topSR = self.predict_SR(self.layer_H, self.infill, new_fan_speed, self.topModel)
-                print(sideSR, topSR)
                 bad_fs_effect = self.predict_print_quality(sideSR, topSR)
+                # GCode Command to change fan speed
                 cmd = "M106 S"
                 if not bad_fs_effect:
                     # there is an attempted attack, change green button to orange
-                    fan_speed_actual = float(matched.group(1)) * 255.0 / 100.0
+                    fan_speed_actual = float(matched.group(1)) * self.MAX_FAN_SPEED / self.MAX_FAN_SPEED_PERCENT
                     self.fan_speed = new_fan_speed
                     self.update_fan_speed()
                     self.update_surface_roughness(sideSR, topSR)
                 # there is now a declared attack, change green button to red
                 cmd += str(fan_speed_actual)
                 self.send_attack_message(bad_fs_effect, self.first_attack)
-                if self.first_attack:
-                    self.first_attack = False
+                if self.first_attack: self.first_attack = False
                 return cmd
-        else:
-            return
-
-    def send_Message(self, typeof, message):
-        payload = {"typeof": typeof, "message" : message}
-        self._plugin_manager.send_plugin_message(self._identifier, payload)
-                                                 
-    def send_attack_message(self, is_fan_bad, first_attack = False):
-            print("attempt to change fan speed")
-            print(is_fan_bad)
-            self.send_Message("is_fan_bad", int(is_fan_bad))
-            self.send_Message("first_attack", int(first_attack))
-
-            
-    def update_surface_roughness(self, sideSR, topSR, initial_update = 0):
-        self.send_Message("sideSR", sideSR)
-        self.send_Message("topSR", topSR)
-        if initial_update:
-            self.send_Message("initial_sideSR", self.initial_sideSR)
-            self.send_Message("initial_topSR", self.initial_topSR)
-        
-    def update_fan_speed(self):
-        self.send_Message("fan_speed", self.fan_speed)
 
     def on_event(self, event, payload):
-        print(event)
         if event == octoprint.events.Events.STARTUP:
             self._logger.info("Octoprint Started")
             # TESTING
-            x = self.predict_SR(.15, 50, 0, self.sideModel)
-            y = self.predict_SR(.15, 50, 100, self.sideModel)
-            z = self.predict_SR(.15, 50, 50, self.sideModel)
-            a = self.predict_SR(.15, 50, 0, self.topModel)
-            b = self.predict_SR(.15, 50, 100, self.topModel)
-            c = self.predict_SR(.15, 50, 50, self.topModel)
-            print(x,y,z)
-            print(a,b,c)
+            # x = self.predict_SR(.15, 50, 0, self.sideModel)
+            # y = self.predict_SR(.15, 50, 100, self.sideModel)
+            # z = self.predict_SR(.15, 50, 50, self.sideModel)
+            # a = self.predict_SR(.15, 50, 0, self.topModel)
+            # b = self.predict_SR(.15, 50, 100, self.topModel)
+            # c = self.predict_SR(.15, 50, 50, self.topModel)
+            # print(x,y,z)
+            # print(a,b,c)
         elif event == octoprint.events.Events.PRINT_STARTED:
             self.printing = True
             self.bad_initial_print = False
@@ -147,6 +119,7 @@ class Detect_attackPlugin(octoprint.plugin.StartupPlugin,
             self.bad_initial_print = self.predict_print_quality(self.initial_sideSR, self.initial_topSR)
             self.send_Message("bad_initial_print", int(self.bad_initial_print))
         elif event == octoprint.events.Events.PRINT_CANCELLED or event == octoprint.events.Events.PRINT_DONE:
+            # Stop Process GCode Fan Trigger
             self.printing = False
         else:
             return
@@ -208,15 +181,32 @@ class Detect_attackPlugin(octoprint.plugin.StartupPlugin,
         return (sideSR > self.sideMax or topSR > self.topMax)
     
     def predict_print_quality(self, sideSR, topSR):
-        # low tolerance here
         if self.bad_initial_print == True:
-            print(" BAD INITIAL PRINT SETTINGS BUT ALSO BAD FAN SPEED")
+            # High Tolerance
             return ((sideSR > self.initial_sideSR + self.sideMAE) or
                                 (topSR > self.initial_topSR + self.topMAE))
         else:
-            print("testing high tolerance")
+            # Low Tolerance
             return self.predict_print_quality_against_high_tolerance(sideSR, topSR)
     
+    def send_Message(self, typeof, message):
+        payload = {"typeof": typeof, "message" : message}
+        self._plugin_manager.send_plugin_message(self._identifier, payload)
+                                                 
+    def send_attack_message(self, is_fan_bad, first_attack = False):
+            self.send_Message("is_fan_bad", int(is_fan_bad))
+            self.send_Message("first_attack", int(first_attack))
+
+            
+    def update_surface_roughness(self, sideSR, topSR, initial_update = 0):
+        self.send_Message("sideSR", sideSR)
+        self.send_Message("topSR", topSR)
+        if initial_update:
+            self.send_Message("initial_sideSR", self.initial_sideSR)
+            self.send_Message("initial_topSR", self.initial_topSR)
+        
+    def update_fan_speed(self):
+        self.send_Message("fan_speed", self.fan_speed)
     ##~~ Softwareupdate hook
 
     def get_update_information(self):
